@@ -1,7 +1,3 @@
-"""FRE-GY 9743 -- Homework 1: 1-D interpolation. REFERENCE SOLUTION.
-
-"""
-
 import copy
 import numpy as np
 from abc import ABC, abstractmethod
