@@ -97,26 +97,27 @@ class Interpolator1D(ABC):
 
 
 class Interpolator1DPCP(Interpolator1D):
-    """Piecewise-constant ("left-continuous") interpolator with FLAT extrapolation.
+    """Piecewise-constant left-continuous interpolator with FLAT extrapolation.
 
     ============================ CONVENTION ============================
     Let axis1 = [a_0, ..., a_{n-1}] (strictly increasing) and
         values = [v_0, ..., v_{n-1}].
 
-        f(x) = v_0        if  x < a_0                        (FLAT left  extrapolation)
-        f(x) = v_j        if  a_{j-1} <= x < a_j,  j = 1..n-1
-        f(x) = v_{n-1}    if  x >= a_{n-1}                   (FLAT right extrapolation)
+        f(x) = v_0        if  x <= a_0                       (FLAT left  extrapolation)
+        f(x) = v_j        if  a_{j-1} < x <= a_j,  j = 1..n-1
+        f(x) = v_{n-1}    if  x > a_{n-1}                    (FLAT right extrapolation)
 
     In words: ordinate v_j owns the bucket that ENDS at its own abscissa a_j,
-    and each bucket is closed on the left, open on the right. The value exactly
-    AT a node therefore belongs to the bucket starting at that node.
+    and each bucket is open on the left, closed on the right. The value exactly
+    AT a node therefore belongs to the bucket ending at that node, so
+    f(a_j) = v_j for every node. This is what makes f left-continuous.
 
     Worked example --- axis1 = [1, 3, 5, 7], values = [3, 4, 5, 6]:
 
-        f(0.5) = 3      f(1)   = 4      f(1.5) = 4      f(3) = 5
+        f(0.5) = 3      f(1)   = 3      f(1.5) = 4      f(3) = 4
         f(5.5) = 6      f(6.5) = 6      f(8)   = 6
 
-    Note f(1) = 4 and f(3) = 5, NOT 3 and 4. Endpoints are where most
+    Note f(1) = 3 and f(3) = 4, NOT 4 and 5. Endpoints are where most
     implementations go wrong -- test them first.
     ====================================================================
     """
