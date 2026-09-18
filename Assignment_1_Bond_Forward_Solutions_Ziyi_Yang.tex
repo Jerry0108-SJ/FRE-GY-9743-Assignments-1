@@ -1,0 +1,556 @@
+% !TEX program = xelatex
+% Self-contained source. Compile with XeLaTeX (twice) or Tectonic.
+% Assignment 1 - Bond Forward Business, complete written solutions.
+\documentclass[11pt]{article}
+\usepackage[a4paper,top=1in,bottom=1in,left=1.1in,right=1.1in]{geometry}
+\usepackage{setspace}
+\setstretch{1.18}
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{2pt}
+\setlength{\emergencystretch}{1.5em}
+\usepackage{fontspec}
+% TeX Gyre Heros is the portable sans-serif fallback used by the reference.
+\setmainfont{texgyreheros-regular.otf}[BoldFont=texgyreheros-bold.otf,ItalicFont=texgyreheros-italic.otf,BoldItalicFont=texgyreheros-bolditalic.otf]
+\setsansfont{texgyreheros-regular.otf}[BoldFont=texgyreheros-bold.otf]
+\usepackage{amsmath,amssymb,booktabs,array,tabularx}
+\usepackage{enumitem,xcolor,colortbl,titlesec,fancyhdr}
+\usepackage{needspace,float,caption,abstract}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+\usepackage[hidelinks]{hyperref}
+\definecolor{NYUviolet}{HTML}{57068C}
+\definecolor{NYUviolet2}{HTML}{8900E1}
+\definecolor{inkgrey}{HTML}{3A3A3A}
+\definecolor{rulegrey}{HTML}{B9B9B9}
+\definecolor{tablehead}{HTML}{ECE3F4}
+\definecolor{lightviolet}{HTML}{F7F1FB}
+\definecolor{softred}{HTML}{FCEBEC}
+\definecolor{softgreen}{HTML}{EAF5EE}
+\hypersetup{colorlinks=true,linkcolor=NYUviolet,urlcolor=NYUviolet2,citecolor=NYUviolet,
+ pdftitle={Assignment 1: Bond Forward Business - Complete Solutions},pdfauthor={Ziyi Yang}}
+\titleformat{\section}{\sffamily\Large\bfseries\color{NYUviolet}}{\thesection}{0.7em}{}[\vspace{2pt}{\color{rulegrey}\titlerule[0.8pt]}]
+\titleformat{\subsection}{\sffamily\large\bfseries\color{inkgrey}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{16pt}{8pt}
+\titlespacing*{\subsection}{0pt}{10pt}{5pt}
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{15pt}
+\renewcommand{\headrulewidth}{0.6pt}
+\fancyhead[L]{\footnotesize\sffamily\color{inkgrey}Bond Forward Business}
+\fancyhead[R]{\footnotesize\sffamily\color{inkgrey}FRE-GT-9743 -- Assignment 1}
+\fancyfoot[C]{\footnotesize\sffamily\color{inkgrey}\thepage}
+\setlist[itemize]{leftmargin=1.4em,itemsep=2pt,topsep=3pt,label=\textcolor{NYUviolet}{\textbullet}}
+\setlist[enumerate]{leftmargin=1.6em,itemsep=2pt,topsep=3pt}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\renewcommand{\arraystretch}{1.12}
+\newcommand{\keynote}[1]{\par\medskip\noindent\textbf{\sffamily\color{NYUviolet}Key result.}\enspace #1\par\medskip}
+\newcommand{\warningbox}[1]{\par\medskip\noindent\textit{\textbf{Modelling convention.}\enspace #1}\par\medskip}
+\newcommand{\focus}[1]{\noindent{\small\itshape\color{inkgrey}\textbf{Question focus.} #1}\par\medskip}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\PV}{\operatorname{PV}}
+\newcommand{\FV}{\operatorname{FV}}
+\newcommand{\AI}{\operatorname{AI}}
+\numberwithin{equation}{section}
+\captionsetup{font=small,labelfont={bf,sf,color=NYUviolet},labelsep=period}
+\renewcommand{\abstractnamefont}{\sffamily\large\bfseries\color{NYUviolet}}
+\renewcommand{\abstracttextfont}{\small\itshape}
+\begin{document}
+\setlength{\abovedisplayskip}{7pt}
+\setlength{\belowdisplayskip}{7pt}
+\setlength{\abovedisplayshortskip}{3pt}
+\setlength{\belowdisplayshortskip}{4pt}
+\setlength{\jot}{2pt}
+\hypersetup{pageanchor=false}
+
+%========================================================
+% TITLE PAGE
+%========================================================
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+\vspace*{0.55in}
+{\color{NYUviolet}\rule{\textwidth}{2.2pt}}\\[10pt]
+{\sffamily\fontsize{16}{19}\selectfont\color{inkgrey}
+Fixed Income Analysis Report}\\[14pt]
+{\sffamily\bfseries\fontsize{25}{30}\selectfont\color{NYUviolet}
+Bond Forward Business}\\[14pt]
+{\sffamily\fontsize{15}{18}\selectfont\color{inkgrey}
+From Cash-and-Carry Replication to\\[3pt]
+CSA Valuation and Risk-Neutral Pricing}\\[10pt]
+{\color{NYUviolet}\rule{\textwidth}{2.2pt}}\\[24pt]
+\begin{minipage}{0.88\textwidth}
+\centering\itshape\small\color{inkgrey}
+This report develops the complete solution to the six written subquestions
+in Assignment 1. It follows a Treasury forward from the client's investment
+objective through the bank's financed hedge, delivery-price calculation,
+mark-to-market valuation and dealer revenue, and concludes with the
+equivalence between replication and risk-neutral pricing.
+\end{minipage}\\[34pt]
+\begin{tabular}{rl}
+\sffamily\bfseries Author & Ziyi Yang\\[3pt]
+\sffamily\bfseries Course & FRE-GT-9743\\[3pt]
+\sffamily\bfseries Source problem & Jianing (Jay) Yao, Assignment 1\\[3pt]
+ & September 11, 2026
+\end{tabular}
+\vfill
+{\sffamily\small\color{inkgrey}Assignment 1 \quad\textbullet\quad Bond Forward Business}\\[2pt]
+{\color{NYUviolet}\rule{\textwidth}{1.2pt}}
+\end{titlepage}
+\hypersetup{pageanchor=true}
+
+%========================================================
+% ABSTRACT, KEYWORDS AND CONTENTS
+%========================================================
+\begin{abstract}
+\noindent
+This report analyses a one-year forward purchase of a specified U.S. Treasury
+bond. It identifies client motivations and essential contract terms, then
+constructs a hedge using the spot bond and matched repo financing. The fair
+delivery price is derived as financed spot cost less the accumulated value of
+interim coupons. The original contract is marked to market using the current
+replacement forward price and the assignment's CSA discount factor. A funding
+advantage explains how a dealer can earn a spread while offering competitive
+terms, subject to residual liquidity, basis and counterparty risks. Finally,
+prepaid-forward replication and a change of numeraire establish the
+risk-neutral pricing result under a common financing and discounting curve.
+Coupon entitlement, price units and compounding conventions are stated
+explicitly throughout.
+\end{abstract}
+\vspace{4pt}
+{\small\noindent\textbf{\sffamily Keywords:}\;
+Bond forward \textbullet\; Repo financing \textbullet\; Cash-and-carry
+\textbullet\; CSA discounting \textbullet\; Change of numeraire}
+\vspace{8pt}
+{\color{rulegrey}\hrule}
+\setcounter{tocdepth}{1}
+\renewcommand{\contentsname}{\sffamily\large\bfseries\color{NYUviolet}Contents}
+{\small\tableofcontents}
+{\color{rulegrey}\hrule}
+\clearpage
+\section*{Notation and Modelling Conventions}
+\addcontentsline{toc}{section}{Notation and Modelling Conventions}
+The sixth subquestion is printed as \textbf{*Q5} in the assignment. It is retained under that label below. The programming exercise on interpolation is a separate part of the assignment and is outside this document's scope.
+
+\keynote{The central pricing identity is: the forward delivery price equals the terminal cost of financing the spot bond, less the terminal value of coupons earned before delivery. All cash flows must use compatible units and settlement conventions.}
+
+\begin{table}[H]
+\centering
+\caption{Notation and Pricing Conventions}
+\label{tab:solution-1}
+\small
+\begin{tabularx}{\textwidth}{@{}L{2.3cm}Y@{}}
+\toprule\rowcolor{tablehead}\textbf{Symbol} & \textbf{Meaning}\\\midrule
+$T_s,\ T_m$ & Forward delivery date and bond maturity date, respectively; $0<T_s<T_m$.\\
+$N,\ q=N/100$ & Aggregate face amount and the scale factor for prices quoted per \$100 face.\\
+$S_t$ & Spot dirty price: $B(t;t,T_m)$.\\
+$F_t$ & Current market forward price: $B(t;T_s,T_m)$.\\
+$K$ & Original contractual dirty delivery price; fixed after inception.\\
+$t_i,\ C_i$ & Date and amount per \$100 face of an interim coupon.\\
+$\tau(a,b)$ & Year fraction between dates $a$ and $b$ under the financing day-count convention.\\
+$D^c(t,T_s)$ & CSA discount factor $df^{CSA}(t,T_s)$ used in the assignment.\\
+$P(t,u)$ & Common zero-coupon discount factor in the single-curve benchmark of *Q5.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{Size convention.} For illustrations, the stated ``1,000,000'' is interpreted as \$1 million face amount, so $q=10{,}000$. The question does not explicitly specify that unit. If it means a number of contracts, the contract multiplier determines the aggregate $N$ instead.
+
+\textbf{Baseline assumptions.} Coupons are known and paid as scheduled. The hedge uses the specified bond, with matched delivery and financing dates. The initial cash-and-carry analysis ignores default, haircuts, transaction costs and unmodelled margin-funding costs. Coupon reinvestment or debt-crediting terms are fixed explicitly. Numerical inputs introduced below are illustrations, not data supplied by the question.
+The problem statement and stipulated MTM framework are taken from the assignment~\cite{yao2026}.
+\clearpage
+\section{Q1: Client motivation and contract terms}
+\focus{Why might the client buy the forward? What belongs on the term sheet? What do Bank A and the client exchange on the settlement date?}
+
+\subsection{Economic purpose of the transaction}
+The client is \textbf{long} the bond forward and Bank A is \textbf{short}. They agree today that the client will buy the specified Treasury on $T_s$ at a fixed price $K$. The one-year forward tenor is different from the maturity of the bond itself. If the bond has ten years remaining today, it has approximately nine years remaining at delivery.
+
+Possible motivations include:
+\begin{enumerate}
+\item \textbf{Locking in a future investment.} The client expects a future cash inflow and wants to fix the purchase terms of a Treasury investment now, without paying the full purchase price today. Collateral may nevertheless be required.
+\item \textbf{Expressing an interest-rate view.} A fall in yields can raise the Treasury price. The long earns a positive terminal payoff if the relevant delivery-date bond price exceeds $K$; the reverse movement creates a loss.
+\item \textbf{Managing an asset--liability exposure.} A future Treasury purchase can help match a future liability or implement a duration target. The hedge must be assessed against the client's existing position rather than in isolation.
+\end{enumerate}
+
+\subsection{Required term-sheet information}
+\begin{table}[H]
+\centering
+\caption{Key Terms of the Bond Forward}
+\label{tab:solution-2}
+\small
+\begin{tabularx}{\textwidth}{@{}L{3.0cm}Y@{}}
+\toprule\rowcolor{tablehead}\textbf{Item} & \textbf{Specification}\\\midrule
+Parties and direction & Client as buyer; Bank A as seller; applicable documentation.\\
+Underlying security & CUSIP or equivalent identifier, currency, coupon rate and dates, maturity and denomination.\\
+Quantity and dates & Face amount or contract count with multiplier; trade date; delivery date and business-day convention.\\
+Price and invoice & Strike $K$, price unit, clean/dirty convention, accrued-interest calculation and payment currency.\\
+Settlement and income & Physical or cash settlement; delivery mechanics or reference price/time; coupon entitlement on and around delivery.\\
+Collateral and default & CSA, eligible collateral, margin and remuneration terms, and default or failed-delivery provisions.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\warningbox{``A 10-year Treasury'' is not enough to identify the deliverable. The contract should specify the actual security. Clean prices also cannot be treated as the full cash invoice without adding accrued interest.}
+
+\subsection{Delivery obligations and payoff}
+\textbf{Physical settlement.} Bank A delivers the agreed Treasury face amount $N$. The client pays $qK$, where $q=N/100$. The same security and coupon-entitlement convention must be used in the market price $S_{T_s}$ and the contract price $K$.
+
+\begin{center}
+\begin{table}[H]
+\centering
+\caption{Physical Settlement Obligations}
+\label{tab:solution-3}
+\small
+\begin{tabularx}{\textwidth}{@{}L{2cm}YY@{}}
+\toprule\rowcolor{tablehead}\textbf{Party} & \textbf{Gives} & \textbf{Receives}\\\midrule
+Bank A & Treasury face amount $N$ & Contractual cash $qK$\\
+Client & Contractual cash $qK$ & Treasury face amount $N$\\\bottomrule
+\end{tabularx}
+\end{table}
+\end{center}
+
+The client's economic payoff is the market value received less the contractual payment:
+\begin{align}
+V_{\mathrm{client}}(T_s)&=q(S_{T_s}-K),\\
+V_{\mathrm{bank}}^{\mathrm{forward}}(T_s)&=q(K-S_{T_s}).
+\end{align}
+Under physical settlement, these are economic payoffs, not extra cash transfers in addition to the exchange of bonds for $qK$. The bank's second expression describes the forward leg, not the combined forward, spot-bond and financing portfolio.
+
+\textbf{Clean strike.} If the contract instead quotes a clean strike $K^{\mathrm{clean}}$, then
+\begin{equation}
+K=K^{\mathrm{clean}}+\AI(T_s),\qquad
+\text{invoice}=q\bigl[K^{\mathrm{clean}}+\AI(T_s)\bigr].
+\end{equation}
+Accrued interest is also quoted per \$100 face. The accrued interest cancels in the price difference only when both legs use the same convention.
+
+\textbf{Coupon entitlement.} Holding the forward does not entitle the client to coupons paid before delivery. After delivery, the client receives the bond cash flows to which the delivered security is entitled. A coupon on $T_s$ needs an explicit allocation rule.
+
+\textbf{Cash settlement.} If agreed, no bond is delivered. Bank A pays $q(S_{T_s}-K)$ when positive; the client pays its absolute value when negative. This states the contractual payoff before netting previously transferred collateral.
+
+\subsection{Numerical illustration}
+Suppose $N=\$1{,}000{,}000$, $K=102$ and $S_{T_s}=104$. Physical settlement exchanges a \$1,020,000 cash payment for bonds worth \$1,040,000. The client's economic gain is \$20,000. Cash settlement would instead require a \$20,000 payment by Bank A, without bond delivery.
+
+\keynote{The client locks the purchase terms, not a guaranteed profit. The terminal gain is positive only if the delivery-date bond price exceeds the agreed price on a consistent quotation basis.}
+
+\Needspace{12\baselineskip}
+\section{Q2: Spot hedge and internal financing}
+\focus{Why does the desk buy the spot bond at inception, and how should it arrange trades with the treasury and repo desks?}
+
+\subsection{Why buying the bond hedges the delivery obligation}
+Bank A has promised to sell the bond at a fixed future price. If it waits until $T_s$ to acquire the bond, a price increase raises the cost of delivery. Buying the matching bond now secures the asset that must be delivered:
+\[
+\text{short client forward}+\text{long matching spot bond}.
+\]
+At delivery, the bond holding contributes market value $qS_{T_s}$ and the short forward contributes $q(K-S_{T_s})$. Their sum is $qK$, independent of the terminal market price. Funding and interim coupons still have to be included to determine the actual profit.
+
+\subsection{A coherent internal funding arrangement}
+Repo is economically secured financing: the security is exchanged for cash with an agreement to reverse the transaction later.~\cite{nyfedrepo}
+One consistent arrangement is:
+\begin{enumerate}
+\item The rates desk buys face amount $N$ of the specified Treasury, paying $qS_0$.
+\item The treasury desk coordinates cash settlement and, if needed, provides bridge funding until the repo settles.
+\item The repo desk takes the bond into the internal financing arrangement and obtains term cash against it. With zero haircut, the repo proceeds cover $qS_0$ and replace the bridge funding.
+\item The rates desk pays the agreed internal repo financing charge. The term is matched to $T_s$, and coupon credits or equivalent income payments are allocated to the desk economically holding the bond.
+\item At $T_s$, customer cash, repayment of repo funding, release of the bond and delivery to the client are coordinated through settlement. Temporary intraday liquidity may be needed.
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\caption{Financed Bond Hedge: Cash-Flow Timeline}
+\label{tab:solution-4}
+\small
+\begin{tabularx}{\textwidth}{@{}L{2.1cm}Y@{}}
+\toprule\rowcolor{tablehead}\textbf{Time} & \textbf{Consolidated economic position}\\\midrule
+$0$ & Buy bond for $qS_0$; obtain matching financing; sell forward.\\
+$t_i<T_s$ & Receive economic benefit of coupon $qC_i$; credit debt or invest under agreed terms.\\
+$T_s$ & Receive $qK$; repay net financing; release and deliver the bond.\\\bottomrule
+\end{tabularx}
+\end{table}
+
+\warningbox{Treasury funding and repo funding must not both be counted as full permanent loans for the same purchase. With haircut $h$, repo may fund only $(1-h)qS_0$; treasury must fund the residual $hqS_0$. This extension is excluded from the basic Q3 formula.}
+
+\Needspace{12\baselineskip}
+\section{Q3: Deriving the initial forward price}
+\focus{Use the coupon schedule, the one-year repo rate $R$, and the spot bond price to determine $B(0;T_s,T_m)$.}
+
+\subsection{Terminal financing cost without coupons}
+Let $\tau=\tau(0,T_s)$. Under simple-interest repo, borrowing \$1 requires repayment of $1+R\tau$. Buying one price-unit position costs $S_0$, so a financed bond with no interim coupons requires terminal cash
+\begin{equation}
+S_0(1+R\tau).
+\end{equation}
+With no additional costs, a zero-profit delivery price must equal this amount.
+
+\subsection{Coupons reduce the net cost of carrying the bond}
+For each coupon date $0<t_i<T_s$, let $H_i$ be its \emph{locked} accumulation or debt-credit factor to $T_s$. If the initial repo repayment factor is $G=1+R\tau$, the terminal net financing cost is
+\begin{equation}\label{eq:generalcarry}
+\boxed{F_0=S_0G-\sum_{0<t_i<T_s}C_iH_i.}
+\end{equation}
+Indeed, the dealer's net terminal cash after delivery is
+\begin{equation}
+\Pi_{T_s}=q\left[K+\sum_i C_iH_i-S_0G\right].
+\end{equation}
+Setting $\Pi_{T_s}=0$ gives $K=F_0$. Thus, the forward price is a delivery-date cash amount, not the present value of that amount.
+
+If each coupon earns a fixed simple reinvestment rate $r_i$, then
+\begin{equation}
+F_0=S_0[1+R\tau(0,T_s)]-
+\sum_i C_i[1+r_i\tau(t_i,T_s)].
+\end{equation}
+For the classroom convention that coupons are credited using the same quoted rate $R$, this reduces to
+\begin{equation}\label{eq:simplecarry}
+\boxed{F_0=S_0[1+R\tau(0,T_s)]-
+\sum_i C_i[1+R\tau(t_i,T_s)].}
+\end{equation}
+
+\warningbox{A one-year repo rate alone does not uniquely specify how every interim coupon is treated. Equation \eqref{eq:simplecarry} assumes an agreed same-rate coupon-crediting rule. Actual repo does not automatically permit arbitrary principal prepayment whenever a coupon is received.}
+
+\Needspace{9\baselineskip}
+\subsection{Interpreting the assignment's coupon hint}
+The coupon's economic benefit belongs to the financed bond position. A repo counterparty receiving the issuer's coupon may return an equivalent manufactured payment; a buy/sell-back can instead credit income through the repurchase price.~\cite{icmacoupons} Both mechanisms reduce the \emph{net economic carrying cost} when the income is credited correctly. The assignment does not specify the repo legal form.
+
+\subsection{Worked example and cash-flow reconciliation}
+Use the following illustrative inputs per \$100 face:
+\[
+S_0=100,\quad R=5\%,\quad T_s=1,\quad
+(t_1,t_2)=(0.25,0.75),\quad C_1=C_2=2.
+\]
+Time is measured in years and coupons are credited at the same simple rate. These dates deliberately avoid a coupon exactly on delivery.
+\begin{align}
+F_0&=100(1.05)-2[1+0.05(0.75)]-2[1+0.05(0.25)]\\
+&=105-2.075-2.025=\boxed{100.9000}.
+\end{align}
+For $N=\$1{,}000{,}000$, the cash flows at delivery reconcile as follows:
+
+\begin{table}[H]
+\centering
+\caption{Delivery-Date Cash-Flow Reconciliation}
+\label{tab:solution-5}
+\small
+\begin{tabularx}{\textwidth}{@{}Yrr@{}}
+\toprule\rowcolor{tablehead}\textbf{Item} & \textbf{Per \$100} & \textbf{Total USD}\\\midrule
+Original financing repayment & $-105.000$ & $-1{,}050{,}000$\\
+First coupon plus accumulation & $+2.075$ & $+20{,}750$\\
+Second coupon plus accumulation & $+2.025$ & $+20{,}250$\\
+Client's forward payment & $+100.900$ & $+1{,}009{,}000$\\\midrule
+Net terminal cash & $0.000$ & $0$\\\bottomrule
+\end{tabularx}
+\end{table}
+
+The accumulated coupon entries represent either proceeds from separate investments or equivalent debt credits, not an extra coupon payment by the issuer at $T_s$.
+
+\subsection{Equivalent discount-factor representation}
+When financing and coupon reinvestment are priced by one consistent curve, write its discount factors as $P^r(0,u)$. Locking forward reinvestment implies
+\[
+G=\frac{1}{P^r(0,T_s)},\qquad
+H_i=\frac{P^r(0,t_i)}{P^r(0,T_s)}.
+\]
+Substitution into \eqref{eq:generalcarry} yields
+\begin{equation}\label{eq:repocurve}
+\boxed{F_0=\frac{S_0-\sum_i C_iP^r(0,t_i)}{P^r(0,T_s)}.}
+\end{equation}
+For a constant continuously compounded rate $r$, it becomes
+\[
+F_0=S_0e^{rT_s}-\sum_i C_ie^{r(T_s-t_i)}.
+\]
+The difference between these expressions and the simple-interest example is a convention, not a different economic principle. They agree only when the accumulation factors are matched consistently.
+
+\keynote{Check three limits: with no coupons, the price equals financed spot cost; with zero financing and reinvestment rates, $F_0=S_0-\sum_iC_i$; with no time remaining and consistent coupon entitlement, the forward price converges to spot.}
+
+\Needspace{12\baselineskip}
+\section{Q4: Marking the forward to market}
+\focus{How is the contract valued at any time $t\in(0,T_s]$?}
+
+\subsection{Recalculate the remaining market forward price}
+The original strike $K$ stays fixed. The replacement forward price $F_t$ changes with spot prices, remaining coupons and current financing conditions. Under the same cash-and-carry assumptions as Q3,
+\begin{equation}
+F_t=S_tG_t(t,T_s)-\sum_{t<t_i<T_s}C_iH_{t,i},
+\end{equation}
+where the financing and coupon-accumulation factors are quoted \emph{at time $t$} for the remaining periods. Under a consistent repo curve, the equivalent expression is
+\begin{equation}
+F_t=\frac{S_t-\sum_{t<t_i<T_s}C_iP^r(t,t_i)}{P^r(t,T_s)}.
+\end{equation}
+Past coupons are no longer in this sum. A delivery-date coupon is included or excluded according to the contractual entitlement convention.
+
+\subsection{Discount the difference from the original strike}
+Using equation (2) supplied in the assignment, the total client and bank values are
+\begin{align}
+\boxed{V_{\mathrm{client}}(t)=qD^c(t,T_s)(F_t-K)},\label{eq:mtm}\\
+V_{\mathrm{bank}}^{\mathrm{forward}}(t)=-V_{\mathrm{client}}(t).
+\end{align}
+The CSA curve discounts the future contract payoff; repo conditions determine the financed bond's carry. They serve different roles and should not be silently substituted for one another. Here \eqref{eq:mtm} is the assignment's stipulated valuation framework, with financing/collateral conventions assumed compatible. Additional funding or collateral-basis effects require an expanded model.
+
+\subsection{Worked example and checks}
+Continue with $K=100.9000$ from Q3. At $t=0.40$, suppose $S_t=101$, the remaining coupon is 2 at 0.75, and both remaining simple financing and reinvestment rates are 4.5\%. Then
+\[
+F_t=101[1+0.045(0.60)]-2[1+0.045(0.25)]=101.7045.
+\]
+If CSA discounting is continuously compounded at 4\%,
+\[
+V_{\mathrm{client}}(t)=10{,}000e^{-0.04(0.60)}(101.7045-100.9000)
+\approx\$7{,}854.22.
+\]
+The bank's forward has the opposite value. For an initially fair contract, $K=F_0$ gives $V(0)=0$. At delivery, $D^c(T_s,T_s)=1$ and $F_{T_s}=S_{T_s}$, recovering the Q1 payoff.
+
+\warningbox{Use today's market financing terms to price a replacement forward. The old locked repo belongs to the bank's existing hedge and has its own value. A change in the forward's MTM is not, by itself, the P\&L of the full hedged portfolio.}
+
+\Needspace{12\baselineskip}
+\section{Q5: Remaining risks and dealer revenue}
+\focus{Does the financed spot hedge remove major market risk, and how can the desk earn revenue from the client?}
+
+\subsection{What is locked, and what remains exposed?}
+Let the bank's actual terminal replication cost per \$100 be
+\[
+F_0^{\mathrm{cost}}=S_0G_b-\sum_iC_iH_{b,i}.
+\]
+Under the ideal matched-cash-flow assumptions, terminal portfolio profit is
+\begin{equation}
+\boxed{\Pi_{T_s}=q(K-F_0^{\mathrm{cost}}).}
+\end{equation}
+The terminal spot price cancels. With fixed term funding and locked coupon credits, no unhedged terminal bond-price or financing-rate bet is required. At the bank's zero-spread replication price, profit is zero before fees and costs.
+
+\Needspace{14\baselineskip}
+This does \emph{not} imply that each position has a constant MTM, or that all practical risks disappear:
+
+\begin{table}[H]
+\centering
+\caption{Residual Risks of the Financed Hedge}
+\label{tab:solution-6}
+\small
+\begin{tabularx}{\textwidth}{@{}L{3.0cm}Y@{}}
+\toprule\rowcolor{tablehead}\textbf{Exposure} & \textbf{Why it can remain}\\\midrule
+Rollover / reinvestment & Repo ending before $T_s$, or unlocked coupon reinvestment, leaves future rates uncertain.\\
+Margin and liquidity & Repo haircuts or variation margin can require cash before the client pays.\\
+Counterparty / delivery & Client default, repo failure or unavailable securities can disrupt the hedge.\\
+Basis and implementation & Security mismatch, collateral/funding basis, transaction costs and operational errors change replication economics.\\\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Revenue from a financing advantage}
+If the bank funds at $R_b$, quotes a client-implied financing rate $R_q$, and the client's comparable outside cost is $R_c$, a mutually attractive quote may satisfy
+\[
+R_b<R_q<R_c.
+\]
+For the simple same-rate coupon convention of Q3,
+\begin{equation}
+F(R)=S_0-\sum_iC_i+R\left[S_0\tau-\sum_iC_i\tau(t_i,T_s)\right].
+\end{equation}
+Thus, if the bracketed sensitivity is positive, the bank can quote above its own cost while still improving on the client's outside replication price.
+
+Using the Q3 bond with $R_b=4\%$, $R_q=5\%$ and $R_c=6\%$ gives $F(R_b)=99.92$, $F(R_q)=100.90$ and $F(R_c)=101.88$. For \$1 million face, the bank earns a locked \emph{gross terminal spread} of \$9,800 and the client saves \$9,800 versus that outside alternative, before other costs.
+
+\keynote{The sales argument is competitive all-in pricing and execution convenience. A spread quote is not simultaneously a zero-value trade under the bank's own cost benchmark: the dealer's margin reflects intermediation and different funding opportunities. Costs, capital and liquidity usage reduce gross revenue.}
+
+\Needspace{14\baselineskip}
+\section{*Q5: Connection to risk-neutral pricing}
+\focus{Relate the Q2--Q3 cash-and-carry argument to risk-neutral valuation and identify the assumptions needed for equivalence. This is the sixth subquestion.}
+
+\subsection{The single-curve benchmark}
+Assume the bond's cash flows are known and default-free; trading and financing are frictionless; borrowing, lending and coupon reinvestment can be locked consistently; and repo funding and CSA discounting use the same pricing curve $P(t,u)$. The security and delivery-date coupon convention are fixed. These assumptions remove funding/collateral basis and permit the standard no-arbitrage replication argument.
+
+Let $\mathcal C_t=\{i:t<t_i<T_s\}$ denote coupons retained before delivery. The cost of a claim to the bond at $T_s$, excluding those interim coupons, is
+\begin{equation}\label{eq:prepaid}
+\text{prepaid-forward price}=S_t-\sum_{i\in\mathcal C_t}C_iP(t,t_i).
+\end{equation}
+To see this, buy the bond and borrow $C_iP(t,t_i)$ against each known interim coupon. At $t_i$, coupon $C_i$ repays the corresponding loan. The remaining asset at $T_s$ is exactly the deliverable bond.
+
+Deferring the payment for that prepaid claim until $T_s$ gives
+\begin{equation}\label{eq:singlecurve}
+\boxed{F_t=\frac{S_t-\sum_{i\in\mathcal C_t}C_iP(t,t_i)}{P(t,T_s)}.}
+\end{equation}
+Consequently, the long forward is the prepaid bond claim less the present value of the strike:
+\begin{align}
+\frac{V_{\mathrm{client}}(t)}q
+&=S_t-\sum_{i\in\mathcal C_t}C_iP(t,t_i)-KP(t,T_s)\\
+&=P(t,T_s)(F_t-K).
+\end{align}
+This agrees with the assignment's MTM formula when $D^c=P$.
+
+\subsection{The risk-neutral expectation}
+Let $\beta_t$ be the money-market numeraire and $Q$ its associated risk-neutral measure. Define the stochastic discount factor along each path by
+\[
+D(t,u)=\frac{\beta_t}{\beta_u}
+=\exp\!\left(-\int_t^u r_s\,ds\right),\qquad
+P(t,u)=\E_t^Q[D(t,u)].
+\]
+Risk-neutral valuation of the bond, including coupons earned before delivery, gives
+\begin{equation}\label{eq:bondRN}
+S_t=\E_t^Q[D(t,T_s)S_{T_s}]
+ +\sum_{i\in\mathcal C_t}C_iP(t,t_i).
+\end{equation}
+The discounted \emph{cum-dividend} gain process is the relevant martingale; a coupon-paying ex-coupon price alone is not.
+
+\subsection{Change of numeraire to the delivery-date bond}
+The $T_s$-forward measure $Q^{T_s}$ uses the zero-coupon bond $P(t,T_s)$ as numeraire. The conditional change-of-numeraire identity is
+\begin{equation}
+\E_t^Q[D(t,T_s)X_{T_s}]
+=P(t,T_s)\E_t^{Q^{T_s}}[X_{T_s}].
+\end{equation}
+Apply it to the bond price in \eqref{eq:bondRN}:
+\begin{align}
+\E_t^{Q^{T_s}}[S_{T_s}]
+&=\frac{\E_t^Q[D(t,T_s)S_{T_s}]}{P(t,T_s)}\\
+&=\frac{S_t-\sum_{i\in\mathcal C_t}C_iP(t,t_i)}{P(t,T_s)}\\
+&=F_t.
+\end{align}
+For the forward payoff itself,
+\begin{align}
+V_{\mathrm{client}}(t)
+&=q\E_t^Q[D(t,T_s)(S_{T_s}-K)]\\
+&=qP(t,T_s)\left(\E_t^{Q^{T_s}}[S_{T_s}]-K\right)\\
+&=qP(t,T_s)(F_t-K).
+\end{align}
+An initially fair contract therefore has
+\begin{equation}
+\boxed{K=F_0=\E_0^{Q^{T_s}}[S_{T_s}].}
+\end{equation}
+The expectation is under the \emph{forward measure}. With stochastic rates, it is generally incorrect to replace it by the ordinary money-market-measure expectation $\E_t^Q[S_{T_s}]$ without accounting for discount-factor dependence.
+
+\subsection{Matching the cash-and-carry formula exactly}
+At inception, the consistent locked financing factors are
+\[
+G=\frac1{P(0,T_s)},\qquad
+H_i=\frac{P(0,t_i)}{P(0,T_s)}.
+\]
+Substitution into Q3 gives \eqref{eq:singlecurve} exactly. With a constant continuously compounded rate $r$,
+\begin{equation}
+F_0=S_0e^{rT_s}-\sum_iC_ie^{r(T_s-t_i)}.
+\end{equation}
+
+\warningbox{Do not mix incompatible compounding conventions. If $P(0,u)=1/(1+Ru)$ is a flat simple zero-rate curve, its locked forward accumulation from $t_i$ to $T_s$ is $(1+RT_s)/(1+Rt_i)$, not generally $1+R(T_s-t_i)$. Q3's same-rate simple example is a specified coupon-crediting convention, not this zero-curve construction.}
+
+\keynote{Replication and risk-neutral pricing agree because they value the same deliverable cash flows under the same financing assumptions. If repo and CSA curves differ, the single-curve proof cannot be used unchanged; the collateral and funding mechanics must be modelled explicitly.}
+
+\clearpage
+\section*{Summary of the Six Answers}
+\addcontentsline{toc}{section}{Summary of the Six Answers}
+
+\begin{table}[H]
+\centering
+\caption{Summary of the Six Answers}
+\label{tab:solution-7}
+\small
+\begin{tabularx}{\textwidth}{@{}L{1.2cm}Y@{}}
+\toprule\rowcolor{tablehead}\textbf{Part} & \textbf{Conclusion}\\\midrule
+Q1 & A client can lock a future investment, express a rate view or manage duration. Specify the actual bond, quantity, dates, price basis, settlement, coupons and CSA. Physical settlement exchanges the bond for $qK$.\\
+Q2 & Buy the matching spot bond and obtain matched term repo funding. Treasury coordinates cash and residual funding; repo funds the secured position. Avoid double-counting financing.\\
+Q3 & Set the fair strike equal to terminal net carry: $F_0=S_0G-\sum_iC_iH_i$. State coupon-crediting, day-count and price conventions.\\
+Q4 & Reprice the remaining market forward and apply the assignment's $V_{\mathrm{client}}(t)=qD^c(t,T_s)(F_t-K)$. Bank value has the opposite sign.\\
+Q5 & Matched replication locks ideal terminal cash flows. A financing advantage supports a client quote above bank cost but below the client's outside alternative. Practical risks and costs remain.\\
+*Q5 & Under a common pricing curve, $F_t=[S_t-\sum_iC_iP(t,t_i)]/P(t,T_s)=\E_t^{Q^{T_s}}[S_{T_s}]$. Cash-and-carry and numeraire pricing coincide.\\\bottomrule
+\end{tabularx}
+\end{table}
+
+
+The numerical illustrations and algebraic derivations are provided for this solution. The external sources clarify market mechanics and do not add unmentioned facts to the assignment. No live bond or repo market data are assumed.
+
+\Needspace{14\baselineskip}
+\phantomsection
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{9}
+
+\bibitem{yao2026} Jianing (Jay) Yao, \emph{FRE-GT-9743 Assignment 1}, September 11, 2026, pp.\ 1--2: problem statement, notation and stipulated CSA-discounted MTM formula.
+\bibitem{nyfedrepo} Federal Reserve Bank of New York, \href{https://www.newyorkfed.org/markets/domestic-market-operations/monetary-policy-implementation/repo-reverse-repo-agreements}{Repo and Reverse Repo Agreements}: economic interpretation of repo as secured financing.
+\bibitem{icmacoupons} ICMA, \href{https://www.icmagroup.org/market-practice-and-regulatory-policy/repo-and-collateral-markets/icma-ercc-publications/frequently-asked-questions-on-repo/22-who-is-entitled-to-receive-coupons-dividends-or-other-income-payments-on-a-security-being-used-as-collateral-in-a-repo/}{Frequently Asked Questions on Repo, Question 22}: collateral income, manufactured payments and buy/sell-back treatment.
+
+\end{thebibliography}
+\end{document}

@@ -108,20 +108,43 @@ class Interpolator1DPCP(Interpolator1D):
         assert self.extrap_method_ == ExtrapMethod.FLAT
 
     def interpolate(self, x: float) -> float:
-        #TODO
-        pass
+        """Return the bucket value, including flat extrapolation."""
+        # side="left" assigns each interior bucket as (x[i-1], x[i]].
+        idx = np.searchsorted(self.axis1_, x, side="left")
+        idx = min(idx, self.length_ - 1)
+        return float(self.values_[idx])
 
     def integrate(self, start_x: float, end_x: float) -> float:
-        #TODO
-        pass
+        """Sum rectangle areas, with a sign change for reversed limits."""
+        weights = self.gradient_of_integrated_value_wrt_ordinate(
+            start_x, end_x
+        )
+        return float(np.dot(weights, self.values_))
 
     def gradient_wrt_ordinate(self, x: float) -> np.ndarray:
-        #TODO
-        pass
+        """Only the ordinate selected at x has sensitivity one."""
+        idx = np.searchsorted(self.axis1_, x, side="left")
+        idx = min(idx, self.length_ - 1)
+        grad = np.zeros(self.length_, dtype=float)
+        grad[idx] = 1.0
+        return grad
 
     def gradient_of_integrated_value_wrt_ordinate(self, start_x: float, end_x: float) -> np.ndarray:
-        #TODO
-        pass
+        """Return the signed overlap length for each ordinate's region."""
+        if start_x > end_x:
+            return -self.gradient_of_integrated_value_wrt_ordinate(
+                end_x, start_x
+            )
+
+        grad = np.zeros(self.length_, dtype=float)
+        for i in range(self.length_):
+            left = -np.inf if i == 0 else self.axis1_[i - 1]
+            # Merge the final bucket with the flat right extrapolation.
+            right = np.inf if i == self.length_ - 1 else self.axis1_[i]
+            overlap_start = max(start_x, left)
+            overlap_end = min(end_x, right)
+            grad[i] = max(0.0, overlap_end - overlap_start)
+        return grad
 
 
 class InterpolatorFactory:
