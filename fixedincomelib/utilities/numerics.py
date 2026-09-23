@@ -107,21 +107,55 @@ class Interpolator1DPCP(Interpolator1D):
                          extrapolation_method)
         assert self.extrap_method_ == ExtrapMethod.FLAT
 
+    def _node_index(self, x: float) -> int:
+        """Index i such that x lies in bucket (axis1[i-1], axis1[i]], with
+        flat extrapolation collapsing x <= axis1[0] to index 0 and
+        x > axis1[-1] to index length-1."""
+        idx = np.searchsorted(self.axis1_, x, side='left')
+        return int(np.clip(idx, 0, self.length_ - 1))
+
     def interpolate(self, x: float) -> float:
-        #TODO
-        pass
+        return self.values_[self._node_index(x)]
+
+    def _bucket_overlaps(self, start_x: float, end_x: float) -> np.ndarray:
+        """Length-N vector: overlap of [start_x, end_x] with each bucket
+        (values_[0] owns the left wing, values_[-1] owns the right wing)."""
+        sign = 1.0
+        lo, hi = start_x, end_x
+        if lo > hi:
+            lo, hi = hi, lo
+            sign = -1.0
+
+        overlaps = np.zeros(self.length_)
+
+        left = lo
+        right = min(hi, self.axis1_[0])
+        if right > left:
+            overlaps[0] += right - left
+
+        for i in range(1, self.length_):
+            left = max(lo, self.axis1_[i - 1])
+            right = min(hi, self.axis1_[i])
+            if right > left:
+                overlaps[i] += right - left
+
+        left = max(lo, self.axis1_[-1])
+        right = hi
+        if right > left:
+            overlaps[-1] += right - left
+
+        return sign * overlaps
 
     def integrate(self, start_x: float, end_x: float) -> float:
-        #TODO
-        pass
+        return float(np.dot(self.values_, self._bucket_overlaps(start_x, end_x)))
 
     def gradient_wrt_ordinate(self, x: float) -> np.ndarray:
-        #TODO
-        pass
+        grad = np.zeros(self.length_)
+        grad[self._node_index(x)] = 1.0
+        return grad
 
     def gradient_of_integrated_value_wrt_ordinate(self, start_x: float, end_x: float) -> np.ndarray:
-        #TODO
-        pass
+        return self._bucket_overlaps(start_x, end_x)
 
 
 class InterpolatorFactory:
