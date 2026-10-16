@@ -58,19 +58,72 @@ class Interpolator1D(ABC):
 
     @abstractmethod
     def interpolate(self, x: float) -> float:
-        pass
+        n = self.length_
+        if x <= self.axis1_[0]:
+            return float(self.values_[0])
+        if x > self.axis1_[n - 1]:
+            return float(self.values_[n - 1])
+        for i in range(1, n):
+            if x <= self.axis1_[i]:
+                return float(self.values_[i])
 
     @abstractmethod
     def integrate(self, start_x: float, end_x: float) -> float:
-        pass
+        sign = 1.0
+        if start_x > end_x:
+            start_x, end_x = end_x, start_x
+            sign = -1.0
+        n = self.length_
+        total = 0.0
+        if start_x < self.axis1_[0]:
+            right = min(end_x, self.axis1_[0])
+            total += (right - start_x) * self.values_[0]
+        for i in range(1, n):
+            left = max(start_x, self.axis1_[i - 1])
+            right = min(end_x, self.axis1_[i])
+            if right > left:
+                total += (right - left) * self.values_[i]
+        if end_x > self.axis1_[n - 1]:
+            left = max(start_x, self.axis1_[n - 1])
+            total += (end_x - left) * self.values_[n - 1]
+
+        return sign * total
 
     @abstractmethod
     def gradient_wrt_ordinate(self, x: float) -> np.ndarray:
-        pass
+        n = self.length_
+        grad = np.zeros(n)
+        if x <= self.axis1_[0]:
+            grad[0] = 1.0
+        elif x > self.axis1_[n - 1]:
+            grad[n - 1] = 1.0
+        else:
+            for i in range(1, n):
+                if x <= self.axis1_[i]:
+                    grad[i] = 1.0
+                    break
+        return grad
 
     @abstractmethod
     def gradient_of_integrated_value_wrt_ordinate(self, start_x: float, end_x: float) -> np.ndarray:
-        pass
+        sign = 1.0
+        if start_x > end_x:
+            start_x, end_x = end_x, start_x
+            sign = -1.0
+        n = self.length_
+        grad = np.zeros(n)
+        if start_x < self.axis1_[0]:
+            right = min(end_x, self.axis1_[0])
+            grad[0] += right - start_x
+        for i in range(1, n):
+            left = max(start_x, self.axis1_[i - 1])
+            right = min(end_x, self.axis1_[i])
+            if right > left:
+                grad[i] += right - left
+        if end_x > self.axis1_[n - 1]:
+            left = max(start_x, self.axis1_[n - 1])
+            grad[n - 1] += end_x - left
+        return sign * grad
 
     @property
     def axis1(self) -> np.ndarray:
